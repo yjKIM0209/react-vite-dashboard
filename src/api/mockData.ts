@@ -1,0 +1,108 @@
+import type { Equipment } from '@/types/equipment';
+
+export const mockEquipments: Equipment[] = [
+  // --- [Group 1] Recharts (Standard UI) | ID: MC-001 ~ 003 ---
+  {
+    id: 'MC-001',
+    name: '사출기 A호기',
+    type: 'Injection',
+    status: 'Running',
+    temperature: 24.8,
+    humidity: 42,
+    powerUsage: 15.4,
+    lastMaintenance: '2026-01-10',
+    operationalHours: 2450,
+  },
+  {
+    id: 'MC-002',
+    name: '프레스 B호기',
+    type: 'Press',
+    status: 'Error',
+    temperature: 52.3, // 고온 에러 테스트용
+    humidity: 40,
+    powerUsage: 0.5,
+    lastMaintenance: '2026-02-01',
+    operationalHours: 1120,
+  },
+  {
+    id: 'MC-003',
+    name: '포장 로봇 C',
+    type: 'Robot',
+    status: 'Idle',
+    temperature: 22.1,
+    humidity: 45,
+    powerUsage: 2.1,
+    lastMaintenance: '2025-12-15',
+    operationalHours: 5600,
+  },
+
+  // --- [Group 2] Chart.js (Real-time Engine) | ID: MC-004 ~ 006 ---
+  {
+    id: 'MC-004',
+    name: '고속 정밀 가공기 D',
+    type: 'CNC',
+    status: 'Running',
+    temperature: 28.5,
+    humidity: 38,
+    powerUsage: 42.1,
+    lastMaintenance: '2026-02-15',
+    operationalHours: 890,
+  },
+  {
+    id: 'MC-005',
+    name: '레이저 커팅기 E',
+    type: 'Laser',
+    status: 'Running',
+    temperature: 31.2,
+    humidity: 35,
+    powerUsage: 18.7,
+    lastMaintenance: '2026-02-10',
+    operationalHours: 1540,
+  },
+  {
+    id: 'MC-006',
+    name: '3D 측정 스캐너 F',
+    type: 'Scanner',
+    status: 'Running',
+    temperature: 25.0,
+    humidity: 40,
+    powerUsage: 5.4,
+    lastMaintenance: '2026-02-20',
+    operationalHours: 320,
+  },
+
+  // --- [Group 3] LightningChart (Ultra-High Performance) | ID: MC-007 ~ 009 ---
+  {
+    id: 'MC-007',
+    name: '대형 컴프레서 G',
+    type: 'Compressor',
+    status: 'Running',
+    temperature: 26.4,
+    humidity: 48,
+    powerUsage: 88.2,
+    lastMaintenance: '2026-01-05',
+    operationalHours: 4200,
+  },
+  {
+    id: 'MC-008',
+    name: '열처리 진공 노 H',
+    type: 'Vacuum Furnace',
+    status: 'Error',
+    temperature: 29.1,
+    humidity: 12,
+    powerUsage: 120.5,
+    lastMaintenance: '2026-01-20',
+    operationalHours: 2100,
+  },
+  {
+    id: 'MC-009',
+    name: '자동 도장 라인 I',
+    type: 'Painting Line',
+    status: 'Idle',
+    temperature: 23.8,
+    humidity: 65,
+    powerUsage: 12.4,
+    lastMaintenance: '2026-02-18',
+    operationalHours: 1300,
+  }
+];
