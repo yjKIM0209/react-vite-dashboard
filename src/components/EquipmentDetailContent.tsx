@@ -26,7 +26,7 @@ export default function EquipmentDetailContent({ id }: { id: string }) {
   }
 
   return (
-    <div className="bg-white rounded-2xl p-8 w-full max-w-2xl mx-auto shadow-sm border border-slate-100">
+    <div className="bg-white rounded-2xl p-8 w-full max-w-2xl mx-auto ">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-slate-900">{equipment.name}</h1>
         <span className="text-slate-400 font-mono">{equipment.id}</span>

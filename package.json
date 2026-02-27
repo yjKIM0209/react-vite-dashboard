@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@arction/lcjs": "^5.2.1",
+    "@tanstack/react-table": "^8.21.3",
     "ag-grid-community": "^35.1.0",
     "ag-grid-react": "^35.1.0",
     "axios": "^1.13.5",

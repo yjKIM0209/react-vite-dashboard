@@ -9,6 +9,7 @@ import Dashboard from "@/pages/Dashboard";
 import EquipmentDetail from "@/pages/EquipmentDetail";
 import EquipmentModal from "@/components/EquipmentModal";
 import EquipmentHistory from "@/pages/EquipmentHistory";
+import ComparisonHistory from "@/pages/ComparisonHistory";
 import Sidebar from "@/components/Sidebar";
 
 function AppContent() {
@@ -23,6 +24,7 @@ function AppContent() {
         <Routes location={background || location}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/equipment-history" element={<EquipmentHistory />} />
+          <Route path="/comparison-history" element={<ComparisonHistory />} />
           <Route path="/equipment/:id" element={<EquipmentDetail />} />
         </Routes>
 
