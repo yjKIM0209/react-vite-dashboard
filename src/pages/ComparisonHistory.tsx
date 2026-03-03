@@ -2,31 +2,43 @@ import { useState, useMemo } from "react";
 import EquipmentTree from "@/components/EquipmentTree";
 import TanStackHistoryGrid from "@/components/TanStackHistoryGrid";
 import type { HistoryData } from "@/types";
+import { useEquipmentStore } from "@/store/useEquipmentStore";
 
 type PeriodType = "today" | "week" | "month" | "custom";
 
 // 데이터 생성 로직 (AG Grid 버전과 동일)
 const generateInitialData = (): HistoryData[] => {
-  return Array.from({ length: 50 }).map((_, i) => ({
-    no: i + 1,
-    status: i % 5 === 0 ? "점검" : "정상",
-    process: ["믹싱", "충진", "포장", "검사"][i % 4],
-    factory: "창원공장",
-    area: "A-Line",
-    eqpId: `EQP-${1001 + i}`,
-    eqpName: `설비-${1001 + i}`,
-    startTime: "2026-02-19 10:00",
-    endTime: "2026-02-19 11:00",
-    repairCost: Math.floor(Math.random() * 5000) + 500,
-    duration: "01:00",
-    memo: "",
-  }));
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+
+  return Array.from({ length: 50 }).map((_, i) => {
+    const startTime = `${year}-${month}-${day} 10:00`;
+    const endTime = `${year}-${month}-${day} 11:00`;
+
+    return {
+      no: i + 1,
+      status: i % 5 === 0 ? "점검" : "정상",
+      process: ["믹싱", "충진", "포장", "검사"][i % 4],
+      factory: "창원공장",
+      area: "A-Line",
+      eqpId: `EQP-${1001 + i}`,
+      eqpName: `설비-${1001 + i}`,
+      startTime: startTime,
+      endTime: endTime,
+      repairCost: Math.floor(Math.random() * 5000) + 500,
+      duration: "01:00",
+      memo: "",
+    };
+  });
 };
 
 export default function ComparisonHistory() {
   const [selectedEqpIds, setSelectedEqpIds] = useState<string[]>([]);
   const [displayEqpIds, setDisplayEqpIds] = useState<string[]>([]);
-  const [searchText, setSearchText] = useState("");
+  const searchText = useEquipmentStore((state) => state.searchText);
+  const setSearchText = useEquipmentStore((state) => state.setSearchText);
   const [rowData] = useState<HistoryData[]>(generateInitialData());
 
   const formatDate = (date: Date) => {
@@ -48,7 +60,8 @@ export default function ComparisonHistory() {
 
   const filteredData = useMemo(() => {
     return rowData.filter((item) => {
-      const matchesEqp = displayEqpIds.length === 0 || displayEqpIds.includes(item.eqpId);
+      const matchesEqp =
+        displayEqpIds.length === 0 || displayEqpIds.includes(item.eqpId);
       const start = new Date(startDate).getTime();
       const end = new Date(endDate).getTime();
       const itemTime = new Date(item.startTime.replace(/-/g, "/")).getTime();
@@ -119,7 +132,9 @@ export default function ComparisonHistory() {
           </div>
 
           <div className="flex flex-col gap-2 pt-2 border-t border-slate-200">
-            <label className="text-xs font-semibold text-slate-500">기간 유형</label>
+            <label className="text-xs font-semibold text-slate-500">
+              기간 유형
+            </label>
             <select
               value={periodType}
               onChange={(e) => handlePeriodChange(e.target.value as PeriodType)}
@@ -133,17 +148,25 @@ export default function ComparisonHistory() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-xs font-semibold text-slate-500">조회 기간</label>
+            <label className="text-xs font-semibold text-slate-500">
+              조회 기간
+            </label>
             <input
               type="datetime-local"
               value={startDate}
-              onChange={(e) => { setStartDate(e.target.value); setPeriodType("custom"); }}
+              onChange={(e) => {
+                setStartDate(e.target.value);
+                setPeriodType("custom");
+              }}
               className="border border-slate-300 rounded px-2 py-1.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
             />
             <input
               type="datetime-local"
               value={endDate}
-              onChange={(e) => { setEndDate(e.target.value); setPeriodType("custom"); }}
+              onChange={(e) => {
+                setEndDate(e.target.value);
+                setPeriodType("custom");
+              }}
               className="border border-slate-300 rounded px-2 py-1.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
             />
           </div>
@@ -159,7 +182,7 @@ export default function ComparisonHistory() {
         {/* 우측 그리드 섹션 */}
         <section className="flex-1 border border-slate-200 bg-white flex flex-col rounded-lg shadow-sm overflow-hidden">
           <div className="flex-1 overflow-hidden">
-            <TanStackHistoryGrid data={filteredData} searchText={searchText} />
+            <TanStackHistoryGrid data={filteredData} />
           </div>
         </section>
       </div>
