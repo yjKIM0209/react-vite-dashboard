@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import EquipmentTree from "@/components/EquipmentTree";
 import TanStackHistoryGrid from "@/components/TanStackHistoryGrid";
 import type { HistoryData } from "@/types";
@@ -6,7 +6,7 @@ import { useEquipmentStore } from "@/store/useEquipmentStore";
 
 type PeriodType = "today" | "week" | "month" | "custom";
 
-// 데이터 생성 로직 (AG Grid 버전과 동일)
+// 초기 데이터 생성 로직
 const generateInitialData = (): HistoryData[] => {
   const now = new Date();
   const year = now.getFullYear();
@@ -35,11 +35,11 @@ const generateInitialData = (): HistoryData[] => {
 };
 
 export default function ComparisonHistory() {
+  const [rowData, setRowData] = useState<HistoryData[]>(generateInitialData());
   const [selectedEqpIds, setSelectedEqpIds] = useState<string[]>([]);
   const [displayEqpIds, setDisplayEqpIds] = useState<string[]>([]);
   const searchText = useEquipmentStore((state) => state.searchText);
   const setSearchText = useEquipmentStore((state) => state.setSearchText);
-  const [rowData] = useState<HistoryData[]>(generateInitialData());
 
   const formatDate = (date: Date) => {
     const offset = date.getTimezoneOffset() * 60000;
@@ -68,6 +68,49 @@ export default function ComparisonHistory() {
       return matchesEqp && itemTime >= start && itemTime <= end;
     });
   }, [rowData, displayEqpIds, startDate, endDate]);
+
+  const handleUpdateRow = useCallback(
+    (index: number, field: keyof HistoryData, value: string | number) => {
+      const targetItem = filteredData[index];
+      if (!targetItem) return;
+
+      setRowData((prev) => {
+        const actualIndex = prev.findIndex((item) => item.no === targetItem.no);
+        if (actualIndex === -1) return prev;
+
+        const newData = [...prev];
+        newData[actualIndex] = {
+          ...newData[actualIndex],
+          [field]: value,
+        };
+        return newData;
+      });
+    },
+    [filteredData],
+  );
+
+  // 신규 행 추가 핸들러
+  const handleAddRow = () => {
+    const now = new Date();
+    const formattedDate = now.toISOString().slice(0, 16).replace("T", " ");
+
+    const newRow: HistoryData = {
+      no: rowData.length > 0 ? Math.max(...rowData.map((r) => r.no)) + 1 : 1,
+      status: "신규",
+      process: "신규공정",
+      factory: "창원공장",
+      area: "A-Line",
+      eqpId: `EQP-NEW-${Date.now().toString().slice(-4)}`,
+      eqpName: "새 설비",
+      startTime: formattedDate,
+      endTime: "",
+      repairCost: 0,
+      duration: "00:00",
+      memo: "신규 추가됨",
+    };
+
+    setRowData((prev) => [newRow, ...prev]);
+  };
 
   const handlePeriodChange = (type: PeriodType) => {
     setPeriodType(type);
@@ -101,11 +144,12 @@ export default function ComparisonHistory() {
 
   return (
     <div className="flex h-full flex-col p-4 bg-slate-50 gap-4 overflow-hidden text-slate-900">
+      {/* 상단 헤더 */}
       <div className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-slate-200">
         <div className="flex items-center gap-3">
           <div className="w-1.5 h-6 bg-emerald-500 rounded-full"></div>
           <h1 className="text-xl font-bold text-slate-800 tracking-tight">
-            설비 상태 이력 조회 (TanStack + shadcn)
+            설비 상태 이력 조회 (TanStack Table)
           </h1>
         </div>
         <div className="flex items-center gap-4">
@@ -121,6 +165,7 @@ export default function ComparisonHistory() {
         </div>
       </div>
 
+      {/* 메인 콘텐츠 영역 */}
       <div className="flex flex-1 gap-4 overflow-hidden">
         <section className="w-80 border border-slate-200 bg-white flex flex-col p-4 rounded-lg shadow-sm gap-4">
           <h2 className="text-sm font-bold text-slate-700 flex items-center gap-2 pl-2">
@@ -138,7 +183,7 @@ export default function ComparisonHistory() {
             <select
               value={periodType}
               onChange={(e) => handlePeriodChange(e.target.value as PeriodType)}
-              className="border border-slate-300 rounded px-2 py-1.5 text-sm bg-white outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+              className="border border-slate-300 rounded px-2 py-1.5 text-sm bg-white outline-none focus:ring-2 focus:ring-emerald-500/20"
             >
               <option value="today">금일</option>
               <option value="week">금주</option>
@@ -158,7 +203,7 @@ export default function ComparisonHistory() {
                 setStartDate(e.target.value);
                 setPeriodType("custom");
               }}
-              className="border border-slate-300 rounded px-2 py-1.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+              className="border border-slate-300 rounded px-2 py-1.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/20"
             />
             <input
               type="datetime-local"
@@ -167,7 +212,7 @@ export default function ComparisonHistory() {
                 setEndDate(e.target.value);
                 setPeriodType("custom");
               }}
-              className="border border-slate-300 rounded px-2 py-1.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+              className="border border-slate-300 rounded px-2 py-1.5 text-sm outline-none focus:ring-2 focus:ring-emerald-500/20"
             />
           </div>
 
@@ -179,10 +224,14 @@ export default function ComparisonHistory() {
           </button>
         </section>
 
-        {/* 우측 그리드 섹션 */}
+        {/* 그리드 섹션 */}
         <section className="flex-1 border border-slate-200 bg-white flex flex-col rounded-lg shadow-sm overflow-hidden">
           <div className="flex-1 overflow-hidden">
-            <TanStackHistoryGrid data={filteredData} />
+            <TanStackHistoryGrid
+              data={filteredData}
+              onAddRow={handleAddRow}
+              onUpdateRow={handleUpdateRow}
+            />
           </div>
         </section>
       </div>
