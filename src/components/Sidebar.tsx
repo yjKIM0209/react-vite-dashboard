@@ -8,6 +8,7 @@ export default function Sidebar() {
     { name: "이력 조회 (AG)", href: "/equipment-history", icon: "📜" },
     { name: "이력 조회 (TS)", href: "/comparison-history", icon: "📜" },
     { name: "무한 스크롤 이력 (TS)", href: "/history-infinite", icon: "📜" },
+    { name: "API 테스트", href: "/api-test", icon: "🧪" },
     { name: "생산 리포트", href: "/reports", icon: "📈" },
   ];
 

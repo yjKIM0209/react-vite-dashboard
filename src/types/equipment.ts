@@ -13,3 +13,14 @@ export interface Equipment {
   lastMaintenance: string;   // 마지막 점검일
   operationalHours: number;  // 누적 가동 시간
 }
+
+
+export interface EquipmentApi {
+  id: string;                    // 고유 UUID
+  equipmentId: string;           // 설비 관리 번호 (예: EQP-001)
+  name: string;                  // 설비명 (예: 식각기)
+  operationStartedAtUtc: string; // 가동 시작 일시 (UTC string)
+  createdAtUtc: string;          // 생성 일시 (UTC string)
+  updatedAtUtc: string;          // 수정 일시 (UTC string)
+  clientTimezone: string;        // 클라이언트 타임존 (예: Asia/Seoul)
+}

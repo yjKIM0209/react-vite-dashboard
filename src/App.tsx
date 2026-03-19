@@ -13,6 +13,7 @@ import EquipmentHistory from "@/pages/EquipmentHistory";
 import ComparisonHistory from "@/pages/ComparisonHistory";
 import Sidebar from "@/components/Sidebar";
 import InfiniteHistoryGrid from "@/components/InfiniteHistoryGrid";
+import EquipmentApiTest from "@/pages/EquipmentApiTestPage";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ function AppContent() {
           <Route path="/comparison-history" element={<ComparisonHistory />} />
           <Route path="/equipment/:id" element={<EquipmentDetail />} />
           <Route path="/history-infinite" element={<InfiniteHistoryGrid />} />
+          <Route path="/api-test" element={<EquipmentApiTest />} />
         </Routes>
 
         {background && (
