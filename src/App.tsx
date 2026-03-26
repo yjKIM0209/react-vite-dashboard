@@ -13,6 +13,8 @@ import EquipmentHistory from "@/pages/EquipmentHistory";
 import ComparisonHistory from "@/pages/ComparisonHistory";
 import InfiniteHistoryGrid from "@/components/InfiniteHistoryGrid";
 import EquipmentApiTest from "@/pages/EquipmentApiTestPage";
+import FactoryManagementPage from "./pages/mdm/FactoryManagementPage";
+import EquipmentManagementPage from "./pages/mdm/EquipmentManagementPage";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/features/layout/components/AppSidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -34,6 +36,14 @@ function AppContent() {
             <section className="flex-1 overflow-auto w-full h-full relative">
               <Routes location={background || location}>
                 <Route path="/" element={<Dashboard />} />
+                <Route
+                  path="/factory-master"
+                  element={<FactoryManagementPage />}
+                />
+                <Route
+                  path="/equipment-master"
+                  element={<EquipmentManagementPage />}
+                />
                 <Route
                   path="/equipment-history"
                   element={<EquipmentHistory />}

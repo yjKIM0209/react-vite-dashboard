@@ -1,3 +1,4 @@
+// src/features/history/components/HistoryGrid.tsx
 import { useMemo, useState, useCallback } from "react";
 import { AgGridReact } from "ag-grid-react";
 import {
@@ -8,6 +9,8 @@ import {
   type ValueFormatterParams,
   type ICellRendererParams,
 } from "ag-grid-community";
+import { PlusCircle, List } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { HistoryData } from "@/types";
 
 // AG Grid 모듈 등록
@@ -143,25 +146,25 @@ export default function HistoryGrid({
         },
       },
       {
-      headerName: "설비 상세 정보",
-      headerClass: "header-group-center",
-      marryChildren: true,
-      children: [ 
-        {
-          field: "eqpId",
-          headerName: "설비 ID",
-          width: 110,
-          editable: true,
-          cellClass: "font-semibold text-slate-600",
-        },
-        {
-          field: "eqpName",
-          headerName: "설비명",
-          width: 130,
-          editable: true,
-        },
-      ],
-    },
+        headerName: "설비 상세 정보",
+        headerClass: "header-group-center",
+        marryChildren: true,
+        children: [
+          {
+            field: "eqpId",
+            headerName: "설비 ID",
+            width: 110,
+            editable: true,
+            cellClass: "font-semibold text-slate-600",
+          },
+          {
+            field: "eqpName",
+            headerName: "설비명",
+            width: 130,
+            editable: true,
+          },
+        ],
+      },
       {
         field: "process",
         headerName: "공정",
@@ -196,34 +199,9 @@ export default function HistoryGrid({
 
   return (
     <div className="w-full h-full flex flex-col p-2 gap-3">
-      <div className="flex justify-between items-center px-2">
-        <h3 className="text-sm font-bold text-slate-600 flex items-center gap-2">
-          <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-          조회 결과 ({filteredData.length}건)
-        </h3>
-        <button
-          onClick={addNewRow}
-          className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded-md text-sm font-bold transition-all shadow-md active:scale-95"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          신규 이력 추가
-        </button>
-      </div>
+      <GridHeader count={filteredData.length} onAdd={addNewRow} />
 
-      <div className="flex-1 w-full min-h-[400px]">
+      <div className="flex-1 w-full min-h-400px">
         <AgGridReact<HistoryData>
           theme={myTheme}
           rowData={filteredData}
@@ -244,6 +222,29 @@ export default function HistoryGrid({
           headerHeight={48}
         />
       </div>
+    </div>
+  );
+}
+
+function GridHeader({ count, onAdd }: { count: number; onAdd: () => void }) {
+  return (
+    <div className="flex justify-between items-center px-2">
+      <div className="flex items-center gap-2">
+        <List className="w-4 h-4 text-blue-500" />
+        <h3 className="text-sm font-bold text-slate-600">
+          조회 결과 <span className="text-blue-600 ml-1">{count}</span>건
+        </h3>
+      </div>
+
+      <Button
+        onClick={onAdd}
+        variant="success"
+        size="sm"
+        className="font-bold shadow-sm"
+      >
+        <PlusCircle className="mr-2 h-4 w-4" />
+        신규 이력 추가
+      </Button>
     </div>
   );
 }
