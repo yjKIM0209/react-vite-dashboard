@@ -34,7 +34,7 @@ export function ActionBar({ onSearch, onAdd, onDelete, onSave, onExcel }: Action
         </Button>
       )}
       {onExcel && (
-        <Button size="sm" variant="ghost" onClick={onExcel} className="h-9 text-slate-500">
+        <Button size="sm" variant="ghost" onClick={onExcel} className="h-9 text-slate-500 border-emerald-600">
           <FileDown className="w-4 h-4 mr-1.5" /> 엑셀
         </Button>
       )}

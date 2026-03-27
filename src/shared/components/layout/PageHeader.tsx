@@ -3,7 +3,6 @@ import { type ReactNode } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
@@ -12,7 +11,7 @@ import { Fragment } from "react";
 
 interface PageHeaderProps {
   title: string;
-  breadcrumbs: string[]; // ['기준 정보', '공통', '공장 관리'] 형태
+  breadcrumbs: string[];
   actions?: ReactNode;
 }
 
@@ -22,6 +21,10 @@ export function PageHeader({ title, breadcrumbs, actions }: PageHeaderProps) {
       <div className="flex items-center gap-3">
         <div className="w-1.5 h-6 bg-emerald-500 rounded-full"></div>
         <div className="space-y-1">
+          <h1 className="text-xl font-bold text-slate-800 tracking-tight">
+            {title}
+          </h1>
+
           {/* 계층 구조 표현 (Breadcrumb) */}
           <Breadcrumb>
             <BreadcrumbList>
@@ -39,10 +42,6 @@ export function PageHeader({ title, breadcrumbs, actions }: PageHeaderProps) {
               ))}
             </BreadcrumbList>
           </Breadcrumb>
-          
-          <h1 className="text-xl font-bold text-slate-800 tracking-tight">
-            {title}
-          </h1>
         </div>
       </div>
       
