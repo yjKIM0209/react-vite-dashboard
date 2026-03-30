@@ -7,15 +7,17 @@ import { SideSearchSheet } from "@/shared/components/layout/SideSearchSheet";
 import { useCurrentMenu } from "@/features/layout/hooks/useCurrentMenu";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { SearchPopover } from "@/shared/components/layout/SearchPopover";
+import { FactoryFilterForm } from "@/features/mdm/components/FactoryFilterForm";
 
 export default function FactoryManagementPage() {
   const { title, breadcrumbs } = useCurrentMenu();
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [gridSearch, setGridSearch] = useState("");
 
   return (
     <PageShell>
-      {/* 1층: 헤더 (검색창 포함) */}
       <PageHeader
         title={title}
         breadcrumbs={breadcrumbs}
@@ -32,20 +34,32 @@ export default function FactoryManagementPage() {
         }
       />
 
-      {/* 2층: 컨트롤 바 (조회조건 + 액션버튼) */}
       <ControlBar
         left={
-          <SideSearchSheet
-            isOpen={isSearchOpen}
-            onOpenChange={setIsSearchOpen}
+          <div className="flex items-center gap-2">
+            <SearchPopover
+            isOpen={isPopoverOpen}
+            onOpenChange={setIsPopoverOpen}
             title={`${title} 조회 조건`}
-            onSearch={() => setIsSearchOpen(false)}
+            onSearch={() => setIsPopoverOpen(false)}
+            width={320}
           >
             <div className="space-y-4">
-              {/* 공장 전용 필드들 */}
-              <p className="text-sm text-slate-500">조회 조건을 입력하세요.</p>
+              <FactoryFilterForm />
+            </div>
+          </SearchPopover>
+          <SideSearchSheet
+            isOpen={isSheetOpen}
+            onOpenChange={setIsSheetOpen}
+            title={`${title} 조회 조건`}
+            onSearch={() => setIsSheetOpen(false)}
+            width={400}
+          >
+            <div className="space-y-4">
+              <FactoryFilterForm />
             </div>
           </SideSearchSheet>
+          </div>
         }
         right={
           <ActionBar
@@ -58,13 +72,11 @@ export default function FactoryManagementPage() {
         }
       />
 
-      {/* 3층: 메인 그리드 영역 */}
       <div className="flex-1 bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden flex flex-col">
         <div className="flex-1 flex items-center justify-center text-slate-400 font-medium">
           AG-Grid 로딩 영역
         </div>
         
-        {/* 하단 상태바 (필요시 추가) */}
         <div className="h-8 border-t bg-slate-50 px-4 flex items-center text-xs text-slate-500">
           Total: 0 rows
         </div>

@@ -1,4 +1,5 @@
-import { Link, useLocation } from "react-router-dom";
+// src/shared/components/sidebar/SidebarNavList.tsx
+import { useLocation, useNavigate } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import {
   Collapsible,
@@ -15,19 +16,28 @@ import {
   SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
 import type { NavItem, NavSubItem } from "@/features/layout/types/menu";
-
+import { useTabStore } from "@/shared/store/useTabStore";
 
 export function SidebarNavList({ items }: { items: NavItem[] }) {
   const { pathname } = useLocation();
+  const { addTab } = useTabStore();
+  const navigate = useNavigate();
+
+  const handleMenuClick = (name: string, href?: string) => {
+    if (href && href !== "#") {
+      addTab({ id: href, title: name });
+      navigate(href);
+    }
+  };
 
   return (
     <SidebarGroup>
       <SidebarMenu className="space-y-1">
         {items.map((item) => {
-          // 1. 하위 메뉴가 있는 경우 (1단계 트리)
+          // 1. 하위 메뉴가 있는 경우
           if (item.items) {
             const isSubActive = item.items.some((sub) =>
-              sub.href ? pathname.startsWith(sub.href) : false,
+              sub.href ? pathname.startsWith(sub.href) : false
             );
 
             return (
@@ -57,6 +67,7 @@ export function SidebarNavList({ items }: { items: NavItem[] }) {
                           key={subItem.name}
                           subItem={subItem}
                           pathname={pathname}
+                          onMenuClick={handleMenuClick}
                         />
                       ))}
                     </SidebarMenuSub>
@@ -68,26 +79,21 @@ export function SidebarNavList({ items }: { items: NavItem[] }) {
 
           // 2. 단독 메뉴인 경우
           const isActive = item.href
-            ? pathname === item.href ||
-              (item.href !== "/" && pathname.startsWith(item.href))
+            ? pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href))
             : false;
 
           return (
             <SidebarMenuItem key={item.name}>
               <SidebarMenuButton
-                asChild
                 isActive={isActive}
                 tooltip={item.name}
-                className={`h-11 px-4 text-[15px] font-semibold transition-all hover:bg-sidebar-accent hover:text-sidebar-accent-foreground ${
-                  isActive
-                    ? "bg-sidebar-accent text-white"
-                    : "text-sidebar-foreground"
+                onClick={() => handleMenuClick(item.name, item.href)}
+                className={`h-11 px-4 text-[15px] font-semibold transition-all hover:bg-sidebar-accent ${
+                  isActive ? "bg-sidebar-accent text-white" : "text-sidebar-foreground"
                 }`}
               >
-                <Link to={item.href ?? "#"}>
-                  {item.icon && <item.icon className="h-5 w-5" />}
-                  <span>{item.name}</span>
-                </Link>
+                {item.icon && <item.icon className="h-5 w-5" />}
+                <span>{item.name}</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           );
@@ -97,20 +103,19 @@ export function SidebarNavList({ items }: { items: NavItem[] }) {
   );
 }
 
-/**
- * 2단계 트리를 지원하기 위한 서브 메뉴 컴포넌트 (재귀 구조)
- */
 function SidebarSubMenu({
   subItem,
   pathname,
+  onMenuClick,
 }: {
   subItem: NavSubItem;
   pathname: string;
+  onMenuClick: (name: string, href?: string) => void;
 }) {
   // 하위 아이템(3단계)이 있는 경우
   if (subItem.items) {
     const isDeepActive = subItem.items.some((deep) =>
-      deep.href ? pathname.startsWith(deep.href) : false,
+      deep.href ? pathname.startsWith(deep.href) : false
     );
 
     return (
@@ -127,11 +132,11 @@ function SidebarSubMenu({
               {subItem.items.map((deepItem) => (
                 <SidebarMenuSubItem key={deepItem.name}>
                   <SidebarMenuSubButton
-                    asChild
                     isActive={pathname === deepItem.href}
+                    onClick={() => onMenuClick(deepItem.name, deepItem.href)}
                     className="text-xs h-8"
                   >
-                    <Link to={deepItem.href ?? "#"}>{deepItem.name}</Link>
+                    <span>{deepItem.name}</span>
                   </SidebarMenuSubButton>
                 </SidebarMenuSubItem>
               ))}
@@ -146,13 +151,13 @@ function SidebarSubMenu({
   return (
     <SidebarMenuSubItem>
       <SidebarMenuSubButton
-        asChild
         isActive={pathname === subItem.href}
-        className={`text-sm h-9 ${pathname === subItem.href ? "text-white" : "text-sidebar-foreground"}`}
+        onClick={() => onMenuClick(subItem.name, subItem.href)}
+        className={`text-sm h-9 ${
+          pathname === subItem.href ? "text-white" : "text-sidebar-foreground"
+        }`}
       >
-        <Link to={subItem.href ?? "#"}>
-          <span>{subItem.name}</span>
-        </Link>
+        <span>{subItem.name}</span>
       </SidebarMenuSubButton>
     </SidebarMenuSubItem>
   );

@@ -4,6 +4,7 @@ import {
   Route,
   useLocation,
   type Location,
+  useNavigate,
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Dashboard from "@/pages/Dashboard";
@@ -18,6 +19,9 @@ import EquipmentManagementPage from "./pages/mdm/EquipmentManagementPage";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/features/layout/components/AppSidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { BottomTabBar } from "./shared/components/layout/BottomTabBar";
+import { useTabStore } from "./shared/store/useTabStore";
+import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +29,30 @@ function AppContent() {
   const location = useLocation();
   const state = location.state as { backgroundLocation?: Location } | null;
   const background = state?.backgroundLocation;
+  const { activeTabId, setActiveTab, tabs, addTab } = useTabStore();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const existingTab = tabs.find((t) => t.id === currentPath);
+
+    if (!existingTab) {
+      const pageTitle =
+        currentPath === "/"
+          ? "Dashboard"
+          : currentPath.split("/").pop()?.toUpperCase() || "Page";
+
+      addTab({ id: currentPath, title: pageTitle });
+    } else if (currentPath !== activeTabId) {
+      setActiveTab(currentPath);
+    }
+  }, [location.pathname, tabs, activeTabId, addTab, setActiveTab]);
+
+  useEffect(() => {
+    if (activeTabId && location.pathname !== activeTabId) {
+      navigate(activeTabId);
+    }
+  }, [activeTabId, navigate, location.pathname]);
 
   return (
     <TooltipProvider>
@@ -66,6 +94,8 @@ function AppContent() {
                 </Routes>
               )}
             </section>
+
+            <BottomTabBar />
           </main>
         </div>
       </SidebarProvider>
