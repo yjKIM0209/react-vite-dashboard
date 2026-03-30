@@ -27,10 +27,10 @@ const queryClient = new QueryClient();
 
 function AppContent() {
   const location = useLocation();
+  const navigate = useNavigate();
   const state = location.state as { backgroundLocation?: Location } | null;
   const background = state?.backgroundLocation;
   const { activeTabId, setActiveTab, tabs, addTab } = useTabStore();
-  const navigate = useNavigate();
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -43,16 +43,22 @@ function AppContent() {
           : currentPath.split("/").pop()?.toUpperCase() || "Page";
 
       addTab({ id: currentPath, title: pageTitle });
-    } else if (currentPath !== activeTabId) {
+    } else {
       setActiveTab(currentPath);
     }
-  }, [location.pathname, tabs, activeTabId, addTab, setActiveTab]);
+  }, []); 
+
+  useEffect(() => {
+    if (location.pathname !== activeTabId) {
+      setActiveTab(location.pathname);
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     if (activeTabId && location.pathname !== activeTabId) {
       navigate(activeTabId);
     }
-  }, [activeTabId, navigate, location.pathname]);
+  }, [activeTabId]);
 
   return (
     <TooltipProvider>
