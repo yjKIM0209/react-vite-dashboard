@@ -1,5 +1,6 @@
-// src/features/mdm/types/factory.tsx
-import type { ColDef, ICellRendererParams } from "ag-grid-community";
+// src/features/mdm/types/factory.ts
+import type { ColDef } from "ag-grid-community";
+import { UseYnBadge } from "../components/UseYnBadge";
 
 export interface FactoryData {
   factoryId: string;
@@ -10,14 +11,6 @@ export interface FactoryData {
   updatedAt: string;
   updatedBy: string;
 }
-
-const UseYnBadge = (params: ICellRendererParams) => {
-  const value = params.value;
-
-  if (!value) return null;
-
-  return <div className="flex items-center h-full">{value}</div>;
-};
 
 export const factoryColumnDefs: ColDef<FactoryData>[] = [
   {
@@ -34,7 +27,7 @@ export const factoryColumnDefs: ColDef<FactoryData>[] = [
   {
     field: "useYn",
     headerName: "사용 여부",
-    width: 100,
+    width: 150,
     editable: true,
     cellEditor: "agSelectCellEditor",
     cellEditorParams: { values: ["Y", "N"] },
