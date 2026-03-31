@@ -20,7 +20,7 @@ import {
 export default function FactoryManagementPage() {
   const { title, breadcrumbs } = useCurrentMenu();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  // const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [gridSearch, setGridSearch] = useState("");
   const [rowData, setRowData] = useState<FactoryData[]>([]);
 
@@ -42,7 +42,7 @@ export default function FactoryManagementPage() {
       setRowData(formattedData);
 
       setIsPopoverOpen(false);
-      setIsSheetOpen(false);
+      // setIsSheetOpen(false);
     } catch (error) {
       console.error("조회 중 오류 발생:", error);
       alert("조회에 실패했습니다. 서버 상태를 확인하세요.");
