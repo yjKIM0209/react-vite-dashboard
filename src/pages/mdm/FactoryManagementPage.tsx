@@ -1,5 +1,6 @@
 // src/pages/mdm/FactoryManagementPage.tsx
-import { useState, useMemo } from "react";
+import { useCallback, useState, useMemo } from "react";
+import { factoryApi } from "@/features/mdm/api/factoryApi";
 import { PageShell } from "@/shared/components/layout/PageShell";
 import { PageHeader } from "@/shared/components/layout/PageHeader";
 import { ControlBar } from "@/shared/components/layout/ControlBar";
@@ -15,14 +16,38 @@ import {
   factoryColumnDefs,
   type FactoryData,
 } from "@/features/mdm/types/factory";
-import { MOCK_FACTORIES } from "@/features/mdm/api/factoryMock";
 
 export default function FactoryManagementPage() {
   const { title, breadcrumbs } = useCurrentMenu();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [gridSearch, setGridSearch] = useState("");
-  const [rowData] = useState<FactoryData[]>(MOCK_FACTORIES);
+  const [rowData, setRowData] = useState<FactoryData[]>([]);
+
+  const [searchParams, setSearchParams] = useState({
+    plantId: "",
+    validState: "Valid", // 기본값을 'Valid'로 설정하여 유효한 공장만 조회
+  });
+
+  const handleSearch = useCallback(async () => {
+    try {
+      console.log("조회 요청 파라미터:", searchParams);
+
+      const data = await factoryApi.searchPlants({
+        plantId: searchParams.plantId || undefined,
+        validState: searchParams.validState,
+      });
+
+      const formattedData = Array.isArray(data) ? data : data ? [data] : [];
+      setRowData(formattedData);
+
+      setIsPopoverOpen(false);
+      setIsSheetOpen(false);
+    } catch (error) {
+      console.error("조회 중 오류 발생:", error);
+      alert("조회에 실패했습니다. 서버 상태를 확인하세요.");
+    }
+  }, [searchParams]);
 
   const gridOptions = useMemo(
     () => ({
@@ -56,29 +81,37 @@ export default function FactoryManagementPage() {
               isOpen={isPopoverOpen}
               onOpenChange={setIsPopoverOpen}
               title={`${title} 조회 조건`}
-              onSearch={() => setIsPopoverOpen(false)}
+              onSearch={handleSearch}
               width={320}
             >
-              <div className="space-y-4">
-                <FactoryFilterForm />
-              </div>
+              <FactoryFilterForm
+                values={searchParams}
+                onChange={(newValues) =>
+                  setSearchParams((prev) => ({ ...prev, ...newValues }))
+                }
+              />
             </SearchPopover>
-            <SideSearchSheet
+
+            {/* 우측 슬라이드형 검색 (동일하게 Props 연결) */}
+            {/* <SideSearchSheet
               isOpen={isSheetOpen}
               onOpenChange={setIsSheetOpen}
               title={`${title} 조회 조건`}
-              onSearch={() => setIsSheetOpen(false)}
+              onSearch={handleSearch}
               width={400}
             >
-              <div className="space-y-4">
-                <FactoryFilterForm />
+              <div className="py-4">
+                <FactoryFilterForm 
+                  values={searchParams} 
+                  onChange={(newValues) => setSearchParams(prev => ({ ...prev, ...newValues }))} 
+                />
               </div>
-            </SideSearchSheet>
+            </SideSearchSheet> */}
           </div>
         }
         right={
           <ActionBar
-            onSearch={() => console.log("조회")}
+            onSearch={handleSearch}
             onAdd={() => console.log("추가")}
             onDelete={() => console.log("삭제")}
             onSave={() => console.log("저장")}
@@ -92,8 +125,11 @@ export default function FactoryManagementPage() {
           <CommonGrid<FactoryData>
             rowData={rowData}
             columnDefs={factoryColumnDefs}
-            showSelection={true}
-            gridOptions={gridOptions}
+            gridOptions={{
+              ...gridOptions,
+              rowSelection: "multiple",
+              suppressRowClickSelection: true,
+            }}
           />
         </div>
 
