@@ -38,4 +38,10 @@ export const factoryApi = {
     const response = await api.post("/plant", params);
     return response.data;
   },
+
+  // 공장 수정 API (PUT)
+  updatePlant: async (params: RegisterPlantRequest) => {
+    const response = await api.put("/plant", params);
+    return response.data;
+  },
 };

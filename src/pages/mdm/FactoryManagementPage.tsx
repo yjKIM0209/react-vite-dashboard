@@ -74,28 +74,41 @@ export default function FactoryManagementPage() {
     setRowData((prev) => [newRow, ...prev]);
   }, []);
 
+  const onCellValueChanged = useCallback((params: any) => {
+    if (params.data.created_time) {
+      params.data.isUpdated = true;
+    }
+  }, []);
+
   const handleSave = useCallback(async () => {
-  try {
-    const newItems = rowData.filter(row => row.plantId && row.created_time === "");
+    try {
+      const newItems = rowData.filter(
+        (row) => row.plantId && !row.created_time,
+      );
+      const updatedItems = rowData.filter(
+        (row) => (row as any).isUpdated === true,
+      );
 
-    if (newItems.length === 0) {
-      alert("저장할 신규 데이터가 없습니다.");
-      return;
+      if (newItems.length === 0 && updatedItems.length === 0) {
+        alert("변경사항이 없습니다.");
+        return;
+      }
+
+      for (const item of newItems) {
+        await factoryApi.registerPlant(item);
+      }
+
+      for (const item of updatedItems) {
+        await factoryApi.updatePlant(item);
+      }
+
+      alert("성공적으로 저장되었습니다.");
+      handleSearch();
+    } catch (error: any) {
+      console.error("저장 오류:", error);
+      alert(`저장 실패: ${error.response?.data?.message || error.message}`);
     }
-
-    for (const item of newItems) {
-      await factoryApi.registerPlant({
-        ...item,
-      });
-    }
-
-    alert("성공적으로 저장되었습니다.");
-    handleSearch(); 
-  } catch (error: any) {
-    console.error("저장 오류:", error);
-    alert(`저장 실패: ${error.response?.data?.message || error.message}`);
-  }
-}, [rowData, handleSearch]);
+  }, [rowData, handleSearch]);
 
   const gridOptions = useMemo(
     () => ({
@@ -173,6 +186,7 @@ export default function FactoryManagementPage() {
           <CommonGrid<FactoryData>
             rowData={rowData}
             columnDefs={factoryColumnDefs}
+            onCellValueChanged={onCellValueChanged}
             gridOptions={{
               ...gridOptions,
               rowSelection: "multiple",

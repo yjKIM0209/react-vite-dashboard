@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import { themeQuartz } from 'ag-grid-community';
-import type { ColDef, GridOptions, GridReadyEvent } from 'ag-grid-community';
+import type { ColDef, GridOptions, GridReadyEvent, NewValueParams } from 'ag-grid-community';
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -14,6 +14,7 @@ interface CommonGridProps<TData = any> {
   showSelection?: boolean;
   onGridReady?: (event: GridReadyEvent<TData>) => void;
   onRowClick?: (data: TData) => void;
+  onCellValueChanged?: (params: NewValueParams<TData>) => void;
 }
 
 const CommonGrid = <TData,>({
@@ -24,6 +25,7 @@ const CommonGrid = <TData,>({
   showSelection = false,
   onGridReady,
   onRowClick,
+  onCellValueChanged,
 }: CommonGridProps<TData>) => {
   
   const defaultColDef = useMemo<ColDef<TData>>(() => ({
@@ -51,6 +53,7 @@ const CommonGrid = <TData,>({
         onGridReady={onGridReady}
         onRowClicked={(e) => onRowClick?.(e.data as TData)}
         {...gridOptions}
+        onCellValueChanged={onCellValueChanged}
       />
     </div>
   );
