@@ -5,7 +5,6 @@ import { PageShell } from "@/shared/components/layout/PageShell";
 import { PageHeader } from "@/shared/components/layout/PageHeader";
 import { ControlBar } from "@/shared/components/layout/ControlBar";
 import { ActionBar } from "@/shared/components/layout/ActionBar";
-// import { SideSearchSheet } from "@/shared/components/layout/SideSearchSheet";
 import { useCurrentMenu } from "@/features/layout/hooks/useCurrentMenu";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
@@ -20,7 +19,6 @@ import {
 export default function FactoryManagementPage() {
   const { title, breadcrumbs } = useCurrentMenu();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  // const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [gridSearch, setGridSearch] = useState("");
   const [rowData, setRowData] = useState<FactoryData[]>([]);
   const [gridApi, setGridApi] = useState<any>(null);
@@ -28,7 +26,7 @@ export default function FactoryManagementPage() {
 
   const [searchParams, setSearchParams] = useState({
     plantId: "",
-    validState: "Valid", // 기본값을 'Valid'로 설정하여 유효한 공장만 조회
+    validState: "Valid",
   });
 
   const handleSearch = useCallback(async () => {
@@ -44,7 +42,6 @@ export default function FactoryManagementPage() {
       setRowData(formattedData);
 
       setIsPopoverOpen(false);
-      // setIsSheetOpen(false);
     } catch (error) {
       console.error("조회 중 오류 발생:", error);
       alert("조회에 실패했습니다. 서버 상태를 확인하세요.");
@@ -229,22 +226,6 @@ export default function FactoryManagementPage() {
                 }
               />
             </SearchPopover>
-
-            {/* 우측 슬라이드형 검색 (동일하게 Props 연결) */}
-            {/* <SideSearchSheet
-              isOpen={isSheetOpen}
-              onOpenChange={setIsSheetOpen}
-              title={`${title} 조회 조건`}
-              onSearch={handleSearch}
-              width={400}
-            >
-              <div className="py-4">
-                <FactoryFilterForm 
-                  values={searchParams} 
-                  onChange={(newValues) => setSearchParams(prev => ({ ...prev, ...newValues }))} 
-                />
-              </div>
-            </SideSearchSheet> */}
           </div>
         }
         right={
