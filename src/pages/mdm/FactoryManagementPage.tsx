@@ -5,7 +5,6 @@ import { PageShell } from "@/shared/components/layout/PageShell";
 import { PageHeader } from "@/shared/components/layout/PageHeader";
 import { ControlBar } from "@/shared/components/layout/ControlBar";
 import { ActionBar } from "@/shared/components/layout/ActionBar";
-// import { SideSearchSheet } from "@/shared/components/layout/SideSearchSheet";
 import { useCurrentMenu } from "@/features/layout/hooks/useCurrentMenu";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
@@ -16,11 +15,11 @@ import {
   factoryColumnDefs,
   type FactoryData,
 } from "@/features/mdm/types/factory";
+import { GridHeader } from "@/shared/components/layout/GridHeader";
 
 export default function FactoryManagementPage() {
   const { title, breadcrumbs } = useCurrentMenu();
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  // const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [gridSearch, setGridSearch] = useState("");
   const [rowData, setRowData] = useState<FactoryData[]>([]);
   const [gridApi, setGridApi] = useState<any>(null);
@@ -28,7 +27,7 @@ export default function FactoryManagementPage() {
 
   const [searchParams, setSearchParams] = useState({
     plantId: "",
-    validState: "Valid", // 기본값을 'Valid'로 설정하여 유효한 공장만 조회
+    validState: "Valid",
   });
 
   const handleSearch = useCallback(async () => {
@@ -44,7 +43,6 @@ export default function FactoryManagementPage() {
       setRowData(formattedData);
 
       setIsPopoverOpen(false);
-      // setIsSheetOpen(false);
     } catch (error) {
       console.error("조회 중 오류 발생:", error);
       alert("조회에 실패했습니다. 서버 상태를 확인하세요.");
@@ -83,20 +81,20 @@ export default function FactoryManagementPage() {
     const newVal = normalize(params.newValue);
 
     if (oldVal !== newVal) {
-    if (params.data.created_time) {
-      params.data.isUpdated = true;
-      
-      if (!params.data.modifiedFields) {
-        params.data.modifiedFields = new Set();
-      }
-      params.data.modifiedFields.add(params.colDef.field);
-    }
+      if (params.data.created_time) {
+        params.data.isUpdated = true;
 
-    params.api.refreshCells({
-      rowNodes: [params.node],
-      force: true,
-    });
-  }
+        if (!params.data.modifiedFields) {
+          params.data.modifiedFields = new Set();
+        }
+        params.data.modifiedFields.add(params.colDef.field);
+      }
+
+      params.api.refreshCells({
+        rowNodes: [params.node],
+        force: true,
+      });
+    }
   }, []);
 
   const onGridReady = (params: any) => {
@@ -229,22 +227,6 @@ export default function FactoryManagementPage() {
                 }
               />
             </SearchPopover>
-
-            {/* 우측 슬라이드형 검색 (동일하게 Props 연결) */}
-            {/* <SideSearchSheet
-              isOpen={isSheetOpen}
-              onOpenChange={setIsSheetOpen}
-              title={`${title} 조회 조건`}
-              onSearch={handleSearch}
-              width={400}
-            >
-              <div className="py-4">
-                <FactoryFilterForm 
-                  values={searchParams} 
-                  onChange={(newValues) => setSearchParams(prev => ({ ...prev, ...newValues }))} 
-                />
-              </div>
-            </SideSearchSheet> */}
           </div>
         }
         right={
@@ -259,6 +241,7 @@ export default function FactoryManagementPage() {
       />
 
       <div className="flex-1 bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+        <GridHeader title={title} count={rowData.length} />
         <div className="flex-1">
           <CommonGrid<FactoryData>
             rowData={rowData}
@@ -272,14 +255,6 @@ export default function FactoryManagementPage() {
               stopEditingWhenCellsLoseFocus: true,
             }}
           />
-        </div>
-
-        <div className="h-8 border-t bg-slate-50 px-4 flex items-center text-xs text-slate-500">
-          Total:{" "}
-          <span className="font-bold text-slate-700 ml-1">
-            {rowData.length}
-          </span>{" "}
-          rows
         </div>
       </div>
     </PageShell>
