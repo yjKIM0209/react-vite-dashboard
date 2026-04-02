@@ -16,6 +16,8 @@ import InfiniteHistoryGrid from "@/components/InfiniteHistoryGrid";
 import EquipmentApiTest from "@/pages/EquipmentApiTestPage";
 import FactoryManagementPage from "./pages/mdm/FactoryManagementPage";
 import EquipmentManagementPage from "./pages/mdm/EquipmentManagementPage";
+import AreaManagementPage from "./pages/mdm/AreaManagementPage";
+import SampleManagementPage from "./pages/mdm/SampleManagementPage";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/features/layout/components/AppSidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -75,6 +77,10 @@ function AppContent() {
                   element={<FactoryManagementPage />}
                 />
                 <Route
+                  path="/area-master"
+                  element={<AreaManagementPage />}
+                />
+                <Route
                   path="/equipment-master"
                   element={<EquipmentManagementPage />}
                 />
@@ -92,6 +98,7 @@ function AppContent() {
                   element={<InfiniteHistoryGrid />}
                 />
                 <Route path="/api-test" element={<EquipmentApiTest />} />
+                <Route path="/sample-master" element={<SampleManagementPage />} />
               </Routes>
 
               {background && (

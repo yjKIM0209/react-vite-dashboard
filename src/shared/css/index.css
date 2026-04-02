@@ -72,3 +72,12 @@
   background-color: #dcfce7 !important; 
   font-weight: 500;
 }
+
+.centered-header .ag-header-cell-label {
+  justify-content: center !important;
+}
+
+.centered-header .ag-header-cell-text {
+  text-align: center;
+  flex: 1;
+}

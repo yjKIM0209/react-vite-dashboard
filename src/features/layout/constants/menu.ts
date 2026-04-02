@@ -14,6 +14,7 @@ export const RAW_MENUS: NavItem[] = [
     icon: LayoutDashboard,
     role: ["admin", "user"],
   },
+  { name: "기준정보 예시", href: "/sample-master", icon: Database, role: ["admin"] },
   {
     name: "기준 정보",
     icon: Database,
@@ -21,7 +22,10 @@ export const RAW_MENUS: NavItem[] = [
     items: [
       {
         name: "공통",
-        items: [{ name: "공장 관리", href: "/factory-master" }],
+        items: [
+          { name: "공장 관리", href: "/factory-master" },
+          { name: "Area 관리", href: "/area-master" },
+        ],
       },
       {
         name: "설비",

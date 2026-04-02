@@ -30,9 +30,10 @@ const CommonGrid = <TData,>({
   
   const defaultColDef = useMemo<ColDef<TData>>(() => ({
     sortable: true,
-    filter: true,
+    filter: false,
     resizable: true,
     minWidth: 100,
+    headerClass: 'centered-header',
     suppressHeaderMenuButton: false, 
     ...gridOptions?.defaultColDef, 
   }), [gridOptions]);

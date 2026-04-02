@@ -235,7 +235,6 @@ export default function FactoryManagementPage() {
             onAdd={handleAddRow}
             onDelete={handleDeleteRow}
             onSave={handleSave}
-            onExcel={() => console.log("엑셀")}
           />
         }
       />
