@@ -1,8 +1,8 @@
 import { mockEquipments } from "@/api/mockData";
-import LiveTemperature from "@/components/LiveTemperature";
-import TemperatureChart from "@/components/TemperatureChart";
-import LightningTemperatureChart from "@/components/LightningTemperatureChart";
-import ChartJSTemperatureChart from "@/components/ChartJSTemperatureChart";
+import LiveTemperature from "@/components/testUi/LiveTemperature";
+import TemperatureChart from "@/components/testUi/TemperatureChart";
+import LightningTemperatureChart from "@/components/testUi/LightningTemperatureChart";
+import ChartJSTemperatureChart from "@/components/testUi/ChartJSTemperatureChart";
 
 export default function EquipmentDetailContent({ id }: { id: string }) {
   const equipment = mockEquipments.find((e) => e.id === id);

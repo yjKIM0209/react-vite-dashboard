@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
-import EquipmentTree from "@/components/EquipmentTree";
-import TanStackHistoryGrid from "@/components/TanStackHistoryGrid";
+import EquipmentTree from "@/components/testUi/EquipmentTree";
+import TanStackHistoryGrid from "@/components/testUi/TanStackHistoryGrid";
 import type { HistoryData } from "@/types";
 import { useEquipmentStore } from "@/store/useEquipmentStore";
 

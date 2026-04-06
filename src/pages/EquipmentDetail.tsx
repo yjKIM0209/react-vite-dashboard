@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import EquipmentDetailContent from "@/components/EquipmentDetailContent";
+import EquipmentDetailContent from "@/components/testUi/EquipmentDetailContent";
 
 export default function EquipmentDetailPage() {
   const { id } = useParams<{ id: string }>();

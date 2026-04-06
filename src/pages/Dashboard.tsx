@@ -1,7 +1,7 @@
 import { mockEquipments } from "@/api/mockData";
-import EquipmentCard from "@/components/EquipmentCard";
-import DashboardSection from "@/components/DashboardSection";
-import OperationRate from "@/components/OperationRate";
+import EquipmentCard from "@/components/testUi/EquipmentCard";
+import DashboardSection from "@/components/testUi/DashboardSection";
+import OperationRate from "@/components/testUi/OperationRate";
 
 export default function Home() {
   const getGroup = (start: number, end: number) =>
