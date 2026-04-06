@@ -11,7 +11,7 @@ import {
 } from "@tanstack/react-table";
 import type { HistoryData } from "@/types";
 import { useEquipmentStore } from "@/store/useEquipmentStore";
-import { EditableCell } from "@/components/EditableCell";
+import { EditableCell } from "@/components/testUi/EditableCell";
 
 interface Props {
   data: HistoryData[];

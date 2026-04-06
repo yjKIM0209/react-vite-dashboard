@@ -1,6 +1,6 @@
 import { useState } from "react";
-import HistoryGrid from "@/components/HistoryGrid";
-import EquipmentTree from "@/components/EquipmentTree";
+import HistoryGrid from "@/components/testUi/HistoryGrid";
+import EquipmentTree from "@/components/testUi/EquipmentTree";
 
 type PeriodType = "today" | "week" | "month" | "custom";
 

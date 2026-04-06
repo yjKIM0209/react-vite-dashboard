@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import EquipmentDetailContent from "@/components/EquipmentDetailContent";
+import EquipmentDetailContent from "@/components/testUi/EquipmentDetailContent";
 
 export default function EquipmentModal() {
   const { id } = useParams<{ id: string }>();

@@ -9,10 +9,10 @@ import {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Dashboard from "@/pages/Dashboard";
 import EquipmentDetail from "@/pages/EquipmentDetail";
-import EquipmentModal from "@/components/EquipmentModal";
+import EquipmentModal from "@/components/testUi/EquipmentModal";
 import EquipmentHistory from "@/pages/EquipmentHistory";
 import ComparisonHistory from "@/pages/ComparisonHistory";
-import InfiniteHistoryGrid from "@/components/InfiniteHistoryGrid";
+import InfiniteHistoryGrid from "@/components/testUi/InfiniteHistoryGrid";
 import EquipmentApiTest from "@/pages/EquipmentApiTestPage";
 import FactoryManagementPage from "./pages/mdm/FactoryManagementPage";
 import EquipmentManagementPage from "./pages/mdm/EquipmentManagementPage";

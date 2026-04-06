@@ -7,7 +7,7 @@ import { ControlBar } from "@/shared/components/layout/ControlBar";
 import { ActionBar } from "@/shared/components/layout/ActionBar";
 import { useCurrentMenu } from "@/features/layout/hooks/useCurrentMenu";
 import { Input } from "@/components/ui/input";
-import { Search, Loader2 } from "lucide-react";
+import { Search } from "lucide-react";
 import { SearchPopover } from "@/shared/components/layout/SearchPopover";
 import { FactoryFilterForm } from "@/features/mdm/components/FactoryFilterForm";
 import CommonGrid from "@/shared/components/table/AgGrid";
@@ -17,16 +17,8 @@ import {
 } from "@/features/mdm/types/factory";
 import { GridHeader } from "@/shared/components/layout/GridHeader";
 import { toast } from "sonner";
-// import {
-//   AlertDialog,
-//   AlertDialogAction,
-//   AlertDialogCancel,
-//   AlertDialogContent,
-//   AlertDialogDescription,
-//   AlertDialogFooter,
-//   AlertDialogHeader,
-//   AlertDialogTitle,
-// } from "@/components/ui/alert-dialog";
+import { ConfirmDialog } from "@/shared/components/modal/ConfirmDialog";
+import { LoadingOverlay } from "@/shared/components/layout/LoadingOverlay";
 
 type RowStatus = "C" | "U" | "D" | "N";
 
@@ -37,13 +29,14 @@ interface ExtendedFactoryData extends FactoryData {
 
 export default function FactoryManagementPage() {
   const { title, breadcrumbs } = useCurrentMenu();
+
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [gridSearch, setGridSearch] = useState("");
   const [rowData, setRowData] = useState<ExtendedFactoryData[]>([]);
   const [gridApi, setGridApi] = useState<any>(null);
   const [deletedIds, setDeletedIds] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  // const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
+  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [searchParams, setSearchParams] = useState({
     plantId: "",
     validState: "Valid",
@@ -99,31 +92,22 @@ export default function FactoryManagementPage() {
   }, []);
 
   const onCellValueChanged = useCallback((params: any) => {
-    const { data, oldValue, newValue, api, node, colDef } = params;
+    const { data, oldValue, newValue, node, colDef } = params;
+    if (oldValue === newValue) return;
 
-    if (oldValue !== newValue) {
-      if (data.rowStatus !== "C") {
-        data.rowStatus = "U";
-
-        if (!data.modifiedFields) {
-          data.modifiedFields = new Set();
-        }
-        data.modifiedFields.add(colDef.field);
-      }
-
-      api.refreshCells({
-        rowNodes: [node],
-        columns: [colDef.field],
-        force: true,
-      });
+    if (data.rowStatus !== "C") {
+      data.rowStatus = "U";
+      data.modifiedFields = (data.modifiedFields || new Set()).add(colDef.field);
     }
+    params.api.refreshCells({ rowNodes: [node], columns: [colDef.field], force: true });
   }, []);
 
   const handleDeleteRow = useCallback(() => {
     if (!gridApi) return;
 
     const selectedRows = gridApi.getSelectedRows();
-    if (selectedRows.length === 0) return toast.error("삭제할 행을 선택해주세요.");
+    if (selectedRows.length === 0)
+      return toast.error("삭제할 행을 선택해주세요.");
 
     const idsToTrack = selectedRows
       .filter((row: ExtendedFactoryData) => row.rowStatus !== "C")
@@ -135,7 +119,7 @@ export default function FactoryManagementPage() {
     setRowData(remainingRows);
   }, [gridApi, rowData]);
 
-  const handleSave = useCallback(async () => {
+  const handleSave = useCallback(() => {
     if (!gridApi) return;
 
     const allRows: ExtendedFactoryData[] = [];
@@ -143,9 +127,9 @@ export default function FactoryManagementPage() {
 
     const createdItems = allRows.filter((row) => row.rowStatus === "C");
     const updatedItems = allRows.filter((row) => row.rowStatus === "U");
-
     const invalidItems = createdItems.filter((row) => !row.plantId?.trim());
-    if (invalidItems.length > 0) return toast.warning("공장 ID는 필수값입니다.");
+    if (invalidItems.length > 0)
+      return toast.warning("공장 ID는 필수값입니다.");
 
     if (
       deletedIds.length === 0 &&
@@ -155,27 +139,35 @@ export default function FactoryManagementPage() {
       return toast.warning("변경사항이 없습니다.");
     }
 
-    if (!confirm("변경사항을 저장하시겠습니까?")) return;
+    setIsSaveDialogOpen(true);
+  }, [gridApi, deletedIds]);
+
+  const executeSave = async () => {
+    setIsLoading(true);
 
     try {
-      setIsLoading(true);
-      for (const id of deletedIds) {
-        await factoryApi.deletePlant(id);
-      }
+      await Promise.all(deletedIds.map((id) => factoryApi.deletePlant(id)));
 
-      for (const item of createdItems) {
-        const sanitizedItem = Object.fromEntries(
-          Object.entries(item).map(([key, value]) => [key, value ?? ""]),
-        );
-        await factoryApi.registerPlant(sanitizedItem as FactoryData);
-      }
+      const allItems: ExtendedFactoryData[] = [];
+      gridApi.forEachNode((node: any) => allItems.push(node.data));
 
-      for (const item of updatedItems) {
-        const sanitizedItem = Object.fromEntries(
-          Object.entries(item).map(([key, value]) => [key, value ?? ""]),
-        );
-        await factoryApi.updatePlant(sanitizedItem as FactoryData);
-      }
+      const sanitize = (item: any) =>
+        Object.fromEntries(Object.entries(item).map(([k, v]) => [k, v ?? ""]));
+
+      const savePromises = [
+        ...allItems
+          .filter((r) => r.rowStatus === "C")
+          .map((r) =>
+            factoryApi.registerPlant(sanitize(r) as unknown as FactoryData),
+          ),
+        ...allItems
+          .filter((r) => r.rowStatus === "U")
+          .map((r) =>
+            factoryApi.updatePlant(sanitize(r) as unknown as FactoryData),
+          ),
+      ];
+
+      await Promise.all(savePromises);
 
       toast.success("성공적으로 저장되었습니다.");
       handleSearch();
@@ -184,7 +176,7 @@ export default function FactoryManagementPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [gridApi, deletedIds, handleSearch]);
+  };
 
   const onGridReady = (params: any) => setGridApi(params.api);
 
@@ -211,14 +203,8 @@ export default function FactoryManagementPage() {
 
   return (
     <PageShell>
-      {isLoading && (
-        <div className="fixed inset-0 z-9999 flex items-center justify-center bg-white/50 backdrop-blur-[1px]">
-          <div className="flex flex-col items-center gap-2">
-            <Loader2 className="size-10 animate-spin text-primary" />
-            <p className="text-sm font-medium text-slate-600">처리 중...</p>
-          </div>
-        </div>
-      )}
+      <LoadingOverlay isLoading={isLoading} />
+
       <PageHeader
         title={title}
         breadcrumbs={breadcrumbs}
@@ -279,6 +265,14 @@ export default function FactoryManagementPage() {
           />
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={isSaveDialogOpen}
+        onOpenChange={setIsSaveDialogOpen}
+        title="변경사항 저장"
+        description="수정, 추가 또는 삭제된 데이터를 서버에 반영하시겠습니까?"
+        onConfirm={executeSave}
+      />
     </PageShell>
   );
 }
